@@ -1,0 +1,266 @@
+Call:
+rpart(formula = brand ~ ., data = df)
+  n= 10000 
+
+          CP nsplit rel error    xerror        xstd
+1 0.09630804      0 1.0000000 1.0000000 0.012819535
+2 0.08141686      3 0.7110759 0.7295797 0.011816463
+3 0.06753899      4 0.6296590 0.6307164 0.011266923
+4 0.05855141      8 0.3595030 0.3906952 0.009381486
+5 0.01665345     10 0.2424002 0.2788792 0.008120449
+6 0.01480307     11 0.2257468 0.2577320 0.007841327
+7 0.01030928     12 0.2109437 0.2381708 0.007568728
+8 0.01000000     13 0.2006344 0.2291832 0.007438407
+
+Variable importance
+    age  salary     car zipcode  credit 
+     56      39       2       1       1 
+
+Node number 1: 10000 observations,    complexity param=0.09630804
+  predicted class=Sony  expected loss=0.3783  P(node) =1
+    class counts:  3783  6217
+   probabilities: 0.378 0.622 
+  left son=2 (7896 obs) right son=3 (2104 obs)
+  Primary splits:
+      salary  < 122801.1 to the left,  improve=637.928700, (0 missing)
+      car     splits as  LRLRLRRRRLLRLRLRRRLL, improve=  4.180783, (0 missing)
+      age     < 68.5     to the left,  improve=  2.865371, (0 missing)
+      zipcode splits as  LLLLLLLLR, improve=  2.251968, (0 missing)
+      credit  < 489848.4 to the right, improve=  1.232283, (0 missing)
+
+Node number 2: 7896 observations,    complexity param=0.09630804
+  predicted class=Sony  expected loss=0.4704914  P(node) =0.7896
+    class counts:  3715  4181
+   probabilities: 0.470 0.530 
+  left son=4 (5888 obs) right son=5 (2008 obs)
+  Primary splits:
+      salary  < 45574.91 to the right, improve=251.291600, (0 missing)
+      car     splits as  LLLRLRRLRLLLLRLRRRLL, improve=  5.026228, (0 missing)
+      zipcode splits as  RRLRRLRLR, improve=  3.058205, (0 missing)
+      age     < 40.5     to the left,  improve=  2.123553, (0 missing)
+      credit  < 130371.8 to the left,  improve=  1.350568, (0 missing)
+
+Node number 3: 2104 observations
+  predicted class=Sony  expected loss=0.03231939  P(node) =0.2104
+    class counts:    68  2036
+   probabilities: 0.032 0.968 
+
+Node number 4: 5888 observations,    complexity param=0.09630804
+  predicted class=Acer  expected loss=0.4558424  P(node) =0.5888
+    class counts:  3204  2684
+   probabilities: 0.544 0.456 
+  left son=8 (4177 obs) right son=9 (1711 obs)
+  Primary splits:
+      salary  < 100194.4 to the left,  improve=215.987800, (0 missing)
+      age     < 61.5     to the left,  improve=181.886700, (0 missing)
+      car     splits as  LLLRLRRLRRLRLRLRRRLL, improve=  5.275247, (0 missing)
+      zipcode splits as  RRLLLLLLR, improve=  2.738417, (0 missing)
+      credit  < 7531.743 to the right, improve=  2.584534, (0 missing)
+
+Node number 5: 2008 observations,    complexity param=0.08141686
+  predicted class=Sony  expected loss=0.2544821  P(node) =0.2008
+    class counts:   511  1497
+   probabilities: 0.254 0.746 
+  left son=10 (668 obs) right son=11 (1340 obs)
+  Primary splits:
+      age     < 59.5     to the right, improve=453.714900, (0 missing)
+      salary  < 25012.51 to the right, improve= 27.553490, (0 missing)
+      zipcode splits as  LLRRRLRLR, improve=  4.528990, (0 missing)
+      car     splits as  LRLRRLRRLLLLRRRLRRLR, improve=  3.584415, (0 missing)
+      elevel  splits as  RRRLL, improve=  1.483778, (0 missing)
+
+Node number 8: 4177 observations,    complexity param=0.06753899
+  predicted class=Acer  expected loss=0.3691645  P(node) =0.4177
+    class counts:  2635  1542
+   probabilities: 0.631 0.369 
+  left son=16 (1468 obs) right son=17 (2709 obs)
+  Primary splits:
+      age     < 40.5     to the left,  improve=237.064200, (0 missing)
+      salary  < 50798.05 to the right, improve= 28.137350, (0 missing)
+      car     splits as  LLLRRRLLRRRRLRLRRRRL, improve=  5.129950, (0 missing)
+      credit  < 8074.384 to the right, improve=  2.934833, (0 missing)
+      zipcode splits as  RRLLLRLLR, improve=  2.158858, (0 missing)
+  Surrogate splits:
+      salary < 100050.9 to the right, agree=0.649, adj=0.002, (0 split)
+
+Node number 9: 1711 observations,    complexity param=0.05855141
+  predicted class=Sony  expected loss=0.3325541  P(node) =0.1711
+    class counts:   569  1142
+   probabilities: 0.333 0.667 
+  left son=18 (1132 obs) right son=19 (579 obs)
+  Primary splits:
+      age     < 60.5     to the left,  improve=177.818700, (0 missing)
+      car     splits as  RRLRLRRRRRLLLRRRLRRL, improve=  6.561707, (0 missing)
+      salary  < 103897.7 to the left,  improve=  3.369326, (0 missing)
+      zipcode splits as  RRLRLLLLR, improve=  2.527783, (0 missing)
+      credit  < 26056.74 to the left,  improve=  2.492112, (0 missing)
+  Surrogate splits:
+      salary < 100432.2 to the right, agree=0.663, adj=0.003, (0 split)
+
+Node number 10: 668 observations,    complexity param=0.01665345
+  predicted class=Acer  expected loss=0.2694611  P(node) =0.0668
+    class counts:   488   180
+   probabilities: 0.731 0.269 
+  left son=20 (471 obs) right son=21 (197 obs)
+  Primary splits:
+      salary < 26640.76 to the right, improve=85.183330, (0 missing)
+      age    < 61.5     to the right, improve=10.376250, (0 missing)
+      car    splits as  LRLRRRRRRLLLRRRLRLLR, improve= 7.756872, (0 missing)
+      elevel splits as  RRRLL, improve= 3.856969, (0 missing)
+      credit < 315532.7 to the left,  improve= 1.314617, (0 missing)
+
+Node number 11: 1340 observations
+  predicted class=Sony  expected loss=0.01716418  P(node) =0.134
+    class counts:    23  1317
+   probabilities: 0.017 0.983 
+
+Node number 16: 1468 observations,    complexity param=0.01480307
+  predicted class=Acer  expected loss=0.140327  P(node) =0.1468
+    class counts:  1262   206
+   probabilities: 0.860 0.140 
+  left son=32 (1308 obs) right son=33 (160 obs)
+  Primary splits:
+      salary  < 51929.02 to the right, improve=102.670300, (0 missing)
+      age     < 37.5     to the left,  improve=  9.833955, (0 missing)
+      zipcode splits as  RRLRRLRLR, improve=  1.990014, (0 missing)
+      car     splits as  LRLRRRRRRRLRLRLRLRRR, improve=  1.370354, (0 missing)
+      credit  < 4453.124 to the right, improve=  1.185250, (0 missing)
+
+Node number 17: 2709 observations,    complexity param=0.06753899
+  predicted class=Acer  expected loss=0.4931709  P(node) =0.2709
+    class counts:  1373  1336
+   probabilities: 0.507 0.493 
+  left son=34 (1611 obs) right son=35 (1098 obs)
+  Primary splits:
+      salary  < 78802.9  to the left,  improve=9.4341130, (0 missing)
+      car     splits as  LLLRRRLLRRRRRRLRRRLL, improve=6.4764960, (0 missing)
+      age     < 49.5     to the right, improve=2.9954030, (0 missing)
+      zipcode splits as  RRRLLRLRR, improve=1.5414230, (0 missing)
+      credit  < 3722.745 to the right, improve=0.9715987, (0 missing)
+  Surrogate splits:
+      car splits as  LLLLLLLLRLLLLLLLLLLL, agree=0.597, adj=0.006, (0 split)
+
+Node number 18: 1132 observations,    complexity param=0.05855141
+  predicted class=Sony  expected loss=0.495583  P(node) =0.1132
+    class counts:   561   571
+   probabilities: 0.496 0.504 
+  left son=36 (595 obs) right son=37 (537 obs)
+  Primary splits:
+      age     < 38.5     to the right, improve=355.940800, (0 missing)
+      car     splits as  RRLLLRRLRLLLLRRRLRLL, improve=  6.078062, (0 missing)
+      salary  < 104063   to the left,  improve=  3.967195, (0 missing)
+      credit  < 26480.2  to the left,  improve=  3.514339, (0 missing)
+      zipcode splits as  LRLRLLLLR, improve=  3.174881, (0 missing)
+  Surrogate splits:
+      car     splits as  RRLLLRRLLLLLLLLLLLRL, agree=0.551, adj=0.054, (0 split)
+      zipcode splits as  LRLRLLLLR, agree=0.551, adj=0.054, (0 split)
+      salary  < 101628.9 to the right, agree=0.544, adj=0.039, (0 split)
+      credit  < 476178.8 to the left,  agree=0.539, adj=0.028, (0 split)
+
+Node number 19: 579 observations
+  predicted class=Sony  expected loss=0.01381693  P(node) =0.0579
+    class counts:     8   571
+   probabilities: 0.014 0.986 
+
+Node number 20: 471 observations
+  predicted class=Acer  expected loss=0.1061571  P(node) =0.0471
+    class counts:   421    50
+   probabilities: 0.894 0.106 
+
+Node number 21: 197 observations
+  predicted class=Sony  expected loss=0.3401015  P(node) =0.0197
+    class counts:    67   130
+   probabilities: 0.340 0.660 
+
+Node number 32: 1308 observations
+  predicted class=Acer  expected loss=0.07492355  P(node) =0.1308
+    class counts:  1210    98
+   probabilities: 0.925 0.075 
+
+Node number 33: 160 observations
+  predicted class=Sony  expected loss=0.325  P(node) =0.016
+    class counts:    52   108
+   probabilities: 0.325 0.675 
+
+Node number 34: 1611 observations,    complexity param=0.06753899
+  predicted class=Acer  expected loss=0.4587213  P(node) =0.1611
+    class counts:   872   739
+   probabilities: 0.541 0.459 
+  left son=68 (832 obs) right son=69 (779 obs)
+  Primary splits:
+      age     < 59.5     to the right, improve=364.1669000, (0 missing)
+      car     splits as  LLLRRRLLRRRLRRLLRLLL, improve=  6.1185640, (0 missing)
+      zipcode splits as  RRRLLRLLR, improve=  3.7371170, (0 missing)
+      salary  < 78166.1  to the right, improve=  2.6897970, (0 missing)
+      credit  < 3722.745 to the right, improve=  0.9397398, (0 missing)
+  Surrogate splits:
+      car     splits as  LLRLLRLLRRLLRRLLRLLL, agree=0.559, adj=0.089, (0 split)
+      zipcode splits as  LRRLLLLLR, agree=0.543, adj=0.055, (0 split)
+      salary  < 74467.56 to the left,  agree=0.535, adj=0.039, (0 split)
+      credit  < 3428.519 to the right, agree=0.520, adj=0.008, (0 split)
+
+Node number 35: 1098 observations,    complexity param=0.06753899
+  predicted class=Sony  expected loss=0.4562842  P(node) =0.1098
+    class counts:   501   597
+   probabilities: 0.456 0.544 
+  left son=70 (529 obs) right son=71 (569 obs)
+  Primary splits:
+      age     < 60.5     to the left,  improve=447.3586000, (0 missing)
+      salary  < 99992.57 to the right, improve=  5.3652620, (0 missing)
+      car     splits as  LLRRRRLLRRRRRLLRLRLR, improve=  3.4202450, (0 missing)
+      credit  < 489304.7 to the left,  improve=  1.0450680, (0 missing)
+      zipcode splits as  LLLRRRRRR, improve=  0.8811946, (0 missing)
+  Surrogate splits:
+      car     splits as  LLRRRRLLRRRRLLLRLRLR, agree=0.547, adj=0.060, (0 split)
+      elevel  splits as  RRRLL, agree=0.536, adj=0.036, (0 split)
+      salary  < 98241.92 to the right, agree=0.534, adj=0.032, (0 split)
+      credit  < 62909.6  to the left,  agree=0.527, adj=0.019, (0 split)
+      zipcode splits as  RRRRRRLLR, agree=0.522, adj=0.008, (0 split)
+
+Node number 36: 595 observations
+  predicted class=Acer  expected loss=0.1277311  P(node) =0.0595
+    class counts:   519    76
+   probabilities: 0.872 0.128 
+
+Node number 37: 537 observations
+  predicted class=Sony  expected loss=0.07821229  P(node) =0.0537
+    class counts:    42   495
+   probabilities: 0.078 0.922 
+
+Node number 68: 832 observations
+  predicted class=Acer  expected loss=0.1334135  P(node) =0.0832
+    class counts:   721   111
+   probabilities: 0.867 0.133 
+
+Node number 69: 779 observations,    complexity param=0.01030928
+  predicted class=Sony  expected loss=0.1938383  P(node) =0.0779
+    class counts:   151   628
+   probabilities: 0.194 0.806 
+  left son=138 (165 obs) right son=139 (614 obs)
+  Primary splits:
+      salary  < 72668.6  to the right, improve=75.3907900, (0 missing)
+      age     < 57.5     to the right, improve=12.2486000, (0 missing)
+      car     splits as  RRLRRRLRRLRRRRRRRRRL, improve= 6.9280520, (0 missing)
+      zipcode splits as  LRRLRRRRR, improve= 0.6984868, (0 missing)
+      elevel  splits as  LLLRR, improve= 0.5217586, (0 missing)
+
+Node number 70: 529 observations
+  predicted class=Acer  expected loss=0.07561437  P(node) =0.0529
+    class counts:   489    40
+   probabilities: 0.924 0.076 
+
+Node number 71: 569 observations
+  predicted class=Sony  expected loss=0.02108963  P(node) =0.0569
+    class counts:    12   557
+   probabilities: 0.021 0.979 
+
+Node number 138: 165 observations
+  predicted class=Acer  expected loss=0.3818182  P(node) =0.0165
+    class counts:   102    63
+   probabilities: 0.618 0.382 
+
+Node number 139: 614 observations
+  predicted class=Sony  expected loss=0.07980456  P(node) =0.0614
+    class counts:    49   565
+   probabilities: 0.080 0.920 
+

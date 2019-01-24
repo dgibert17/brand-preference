@@ -1,0 +1,391 @@
+---
+title: "Brand preference"
+author: "David Gibert Bosque"
+date: "October 2018"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+```{r include=FALSE}
+rm(list = ls())
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r include=FALSE}
+pacman::p_load(xlsx, caret, e1071, randomForest, dplyr, ggplot2, rpart, rpart.plot, corrplot)
+```
+# **REPORT DESCRIPTION**
+This report main objective is to predict the customer's brand preference on laptops (Sony or Acer) based on their characteristics such as Age and Salary.
+
+---
+
+# **SUMMARISED REPORT**
+
+### 1.  Metrics about the models used on classification
+```{r echo=FALSE}
+load(file = "metrics.Rdata")
+metrics
+```
+Comparing both algorithms metrics, we clearly identify that the best model to use for classification here is KNN with k = 5, which has higher accuracy and kappa than Random Forest.
+
+### 2.  Predicting brand
+Image showing the predicted amount of values for each brand on the incompete dataset
+
+![](/home/david/Projects/Brand preference/predicted_amounts.PNG)
+
+### 3.  Data distribution
+Image that shows the distribution of customers by Age.
+
+![](/home/david/Projects/Brand preference/age_hist.PNG)
+
+It does not make much sense that it follows a uniform distribution. In theory, it should look like a normal distribution. This means that the sample has not been randomly selected, but a certain number of people has been selected for each Age. This is just an example, all the other distributions but the one on Salary have a uniform range.
+
+### 4.  Salary distribution comparison
+Image showing distributions for Salary and Brand for both, Predicted and Original dataset. The distribution of data is quite similar, so we can use the model to predict on this data.
+
+![](/home/david/Projects/Brand preference/salary_distro.png)
+The distributions among data attributes on the Predicted values are quite similar compared to the distributions on the Original data set, which means we can use the model to classify customers that have this very similar characteristics to ones on our dataset. Due to to the issue that the sampling of customers has not been random, we cannot extrapolate the info for any new potential customer. Then again, is very important to make clear that the model for classification works, but only for potential customers that have similar attribute characteristics to the ones used for training our model, not for any kind of customer.
+
+**To improve this model and make it useful to classify any new potential customer, we would need access to a new sample, as big as possible, of randomly selected customers.**
+
+---
+
+# **FULL REPORT**
+# **Loading data set**
+```{r}
+# df = read.xlsx(file = "C:/Users/David/Google Drive/Ubiqum/3_BrandPreference/survey_complete.xlsx",
+#                sheetIndex = 2)
+# save(df, file = "survey_complete.Rdata")
+load("survey_complete.Rdata")
+head(df)
+```
+
+# **Checking structure**
+```{r}
+str(df)
+```
+*We need to format the label attributes properly, as all attributes appear like numeric and that is not the way all data is.*
+
+# **Formatting data properly**
+```{r}
+df$elevel = factor(x = df$elevel,
+                   levels = 0:4,
+                   labels = c("Less_Than_High_School", "High_School", "Some_College", "4_Year_Degree_College", "Master_PHD"),
+                   ordered = TRUE) #Making 'elevel' an ordinal factor attribute
+
+df$zipcode = factor(x = df$zipcode,
+                    levels = 0:8,labels = c("New_England", "Mid_Atlantic", "ENC", "WNC", "South_Atlantic", "ESC", "WSC", "Mountain", "Pacific"),
+                    ordered = FALSE) #Labeling regions
+
+df$brand = factor(x = df$brand,
+                  levels = 0:1,
+                  labels = c("Acer", "Sony"),
+                  ordered = FALSE) #Labeling factors
+
+df$car = as.factor(df$car) #Convert variable to factor
+
+str(df)
+```
+
+# **Feature engineering - Rows with value 0 at "Credit"**
+```{r}
+# df = df[!df$credit == 0, ] #Deletig rows were the "credit" value is 0
+# df["new"] <- df$salary/df$credit
+# cor(df[,c("salary", "credit", "new")])
+```
+
+# **Exploring data distribution**
+```{r}
+hist(df$salary, main = "Salary histogram")
+hist(df$age, main = "Age histogram")
+hist(df$credit, main = "Credit histogram")
+
+barplot(table(df$elevel))
+barplot(table(df$car), main = "Car brands category")
+barplot(table(df$zipcode))
+barplot(table(df$brand))
+
+table(df$zipcode)
+```
+
+*We can see that all the attributes follow some kind of uniform distribution, which is a little bit awkward.*
+*Almost the same amount of people has been selected in this study in each region. The sampling method does not look random at all.*
+
+# **Correlation plot**
+```{r}
+df2 = df[c("salary", "age", "credit")]
+plot(df2)
+cor(df2)
+```
+*As we can see beforehand, there isn't any kind of correlation between the numeric attributes.*
+
+# **Relation between attributes and Dependent variable "Brand"**
+```{r}
+par(mfrow = c(1,2))
+plot(df$salary~df$brand, main = "Brand & Salary")
+plot(df$brand~df$salary, main = "Brand & Salary")
+
+par(mfrow = c(1,2))
+plot(df$age~df$brand, main = "Brand & Age")
+plot(df$brand~df$age, main = "Brand & Age")
+
+par(mfrow = c(1,2))
+plot(df$elevel~df$brand, main = "Brand & Elevel")
+plot(df$brand~df$elevel, main = "Brand & Elevel")
+
+par(mfrow = c(1,2))
+plot(df$car~df$brand, main = "Brand & Car")
+plot(df$brand~df$car, main = "Brand & Car")
+
+par(mfrow = c(1,2))
+plot(df$zipcode~df$brand, main = "Brand & Zipcode")
+plot(df$brand~df$zipcode, main = "Brand & Zipcode")
+
+par(mfrow = c(1,2))
+plot(df$credit~df$brand, main = "Brand & Credit")
+plot(df$brand~df$credit, main = "Brand & Credit")
+```
+
+*Looks like the only attribute that explains if a brand is prefered is the "salary". We can see how people that earn between 20k and 60k aprox. prefer Sony over Acer, while people who earn more prefer Acer. That is not true for people earning more than 140k though, they all prefer Sony.*
+
+# **Looking at a Decision Tree variables importance**
+```{r}
+tree = rpart(formula = brand~., data = df)
+sumtree = summary(tree, file = "summTree")
+sumtree$variable.importance
+```
+
+*The tree shows that the most important variables to segment customers are Age and Salary.*
+
+# **Age & Salary vs Brand individually and gathered**
+```{r}
+treeAge = rpart(formula = brand~age, data = df)
+rpart.plot(x = treeAge, box.palette = "RdBu", nn = TRUE)
+
+treeSalary = rpart(formula = brand~salary, data = df)
+rpart.plot(x = treeSalary, box.palette = "RdBu", nn = TRUE)
+
+tree = rpart(formula = brand~age+salary, data = df)
+rpart.plot(x = tree, box.palette = "RdBu", nn = TRUE)
+```
+
+*1. We can see how 'Age' alone does not explain anything about the chosen brand.*
+
+*2. Salary itself segments customers pretty fine.*
+
+*3. We must gather 'Salary' and 'Age' because they both explain better the segmentation of customers.*
+
+# **Normalizing data**
+```{r}
+df$salary <- (df$salary - mean(df$salary)) / sd(df$salary)
+df$age <- (df$age - mean(df$age)) / sd(df$age)
+df$credit <- (df$credit - mean(df$credit)) / sd(df$credit)
+head(df)
+```
+
+*Normalizing transforms all attributes values so they have the same range on a Z distribution.*
+
+# **Train & Test data.frames**
+```{r}
+idxs = createDataPartition(y = df$brand, list = FALSE, p = 0.75)
+train = df[idxs, ]
+test = df[-idxs, ]
+```
+
+# **Checking distribution in original and partitioned data**
+```{r}
+prop.table(table(train$brand)) * 100 #Training set
+prop.table(table(test$brand)) * 100 #Test set
+prop.table(table(df$brand)) * 100 #Original set
+```
+*We can see how the function "createDataPartition" distributes data proportionally equal between partitions (not just randomly).*
+
+# **KNN model**
+```{r}
+ctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+
+knnFit <- train(brand ~ age+salary,
+                data = train,
+                method = "knn",
+                trControl = ctrl,
+                tuneLength = 10)
+
+#Output of kNN fit
+knnFit
+plot(knnFit)
+```
+
+*We can see that the best K is 23 but the difference for accuracy between k = 5 and 23 is really small, so we will take the most simple model, which is k = 5*
+
+# **KNN with k = 5**
+```{r}
+knnFit <- train(brand ~ age+salary,
+                data = train,
+                method = "knn",
+                trControl = ctrl,
+                tuneGrid = expand.grid(k = 5))
+
+knnFit
+```
+
+# **KNN performance**
+```{r}
+knnPredict <- predict(knnFit, newdata = test)
+#Get the confusion matrix to see accuracy value and other parameter values
+
+confmat = confusionMatrix(knnPredict, test$brand)
+knitr::kable(confmat$table)
+
+knnMet = postResample(pred = knnPredict, test$brand)
+knnMet
+```
+
+*Looks like our model works pretty well on the test-split data, but we need to take a look at how it performs on our validation data. Before that, let's define a Random Forest model to see if it improves the error rates of KNN on the test data.*
+
+# **Random Forest model**
+```{r}
+rfFit = randomForest(brand ~ age+salary, data = train, ntree = 60)
+
+#Output of random forest fit
+rfFit
+plot(rfFit)
+```
+
+*The optimal number of trees is between 20 and 30.*
+
+# **RF performance**
+```{r}
+rfPredict <- predict(rfFit, newdata = test)
+confmat = confusionMatrix(rfPredict, test$brand)
+knitr::kable(confmat$table)
+rfMet = postResample(pred = rfPredict, test$brand)
+rfMet
+```
+
+*Looks like Random Forest performs great, just as KNN.*
+
+# **Metrics for predicted data on the test set**
+```{r}
+metrics = matrix(c(knnMet[1], knnMet[2], rfMet[1], rfMet[2]),
+                 ncol = 2,
+                 nrow = 2,
+                 byrow = T)
+colnames(metrics) <- c("KNN k = 5", "Random Forest")
+rownames(metrics) <- c("Accuracy", "Kappa")
+metrics = knitr::kable(metrics)
+# save(... = metrics, file = "metrics.Rdata")
+metrics
+```
+
+*Comparing both algorithms metrics, we clearly identify that the best model to use for classification here is KNN, which has higher accuracy and kappa than Random Forest.*
+
+# **Loading incomplete data**
+```{r}
+# dfIncomp = read.csv(file = "C:/Users/David/Google Drive/Ubiqum/3_BrandPreference/survey_incomplete.csv")
+# save(dfIncomp, file = "survey_incomplete.Rdata")
+load("survey_incomplete.Rdata")
+head(dfIncomp)
+str(dfIncomp)
+```
+
+# **Format new data frame**
+```{r}
+dfIncomp$elevel = factor(x = dfIncomp$elevel,
+                   levels = 0:4,
+                   labels = c("Less_Than_High_School", "High_School", "Some_College", "4_Year_Degree_College", "Master_PHD"),
+                   ordered = TRUE) #Making 'elevel' an ordinal factor attribute
+
+dfIncomp$zipcode = factor(x = dfIncomp$zipcode,
+                    levels = 0:8,labels = c("New_England", "Mid_Atlantic", "ENC", "WNC", "South_Atlantic", "ESC", "WSC", "Mountain", "Pacific"),
+                    ordered = FALSE) #Labeling regions
+
+dfIncomp$brand = factor(x = dfIncomp$brand,
+                  levels = 0:1,
+                  labels = c("Acer", "Sony"),
+                  ordered = FALSE) #Labeling factors
+
+dfIncomp$car = as.factor(dfIncomp$car) #Convert variable to factor
+
+str(dfIncomp)
+```
+
+# **Exploring data distribution for the Incomplete Dataset**
+```{r}
+hist(dfIncomp$salary, main = "Salary histogram")
+hist(dfIncomp$age, main = "Age histogram")
+hist(dfIncomp$credit, main = "Credit histogram")
+
+barplot(table(dfIncomp$elevel))
+barplot(table(dfIncomp$car), main = "Car brands category")
+barplot(table(dfIncomp$zipcode))
+```
+
+*We can see that distributions here are unsual, just as on the Complete dataset, but they are similar to each other. Due to this reason though, we can predict (classify) values on the new dataset.*
+
+# **Normalizing Incomplete dataset**
+```{r}
+dfIncomp$salary <- (dfIncomp$salary - mean(dfIncomp$salary)) / sd(dfIncomp$salary)
+dfIncomp$age <- (dfIncomp$age - mean(dfIncomp$age)) / sd(dfIncomp$age)
+dfIncomp$credit <- (dfIncomp$credit - mean(dfIncomp$credit)) / sd(dfIncomp$credit)
+head(dfIncomp)
+```
+
+# **Classifying Incomplete dataset**
+```{r}
+knnPredict <- predict(knnFit, newdata = dfIncomp)
+summary(knnPredict)
+plot(knnPredict)
+```
+
+*We can see the total amount of predictions made for each brand.*
+
+# **Taking a look at Incomplete data with predicted values**
+```{r}
+dfPredicted = as.data.frame(dfIncomp)
+dfPredicted["predicted"] <- knnPredict
+dfPredicted = dfPredicted[,-7]
+
+par(mfrow = c(1,2))
+plot(dfPredicted$salary~dfPredicted$predicted, main = "Brand & Salary")
+plot(dfPredicted$predicted~dfPredicted$salary, main = "Brand & Salary")
+
+par(mfrow = c(1,2))
+plot(dfPredicted$age~dfPredicted$predicted, main = "Brand & Age")
+plot(dfPredicted$predicted~dfPredicted$age, main = "Brand & Age")
+
+par(mfrow = c(1,2))
+plot(dfPredicted$elevel~dfPredicted$predicted, main = "Brand & Elevel")
+plot(dfPredicted$predicted~dfPredicted$elevel, main = "Brand & Elevel")
+
+par(mfrow = c(1,2))
+plot(dfPredicted$car~dfPredicted$predicted, main = "Brand & Car")
+plot(dfPredicted$predicted~dfPredicted$car, main = "Brand & Car")
+
+par(mfrow = c(1,2))
+plot(dfPredicted$zipcode~dfPredicted$predicted, main = "Brand & Zipcode")
+plot(dfPredicted$predicted~dfPredicted$zipcode, main = "Brand & Zipcode")
+
+par(mfrow = c(1,2))
+plot(dfPredicted$credit~dfPredicted$predicted, main = "Brand & Credit")
+plot(dfPredicted$predicted~dfPredicted$credit, main = "Brand & Credit")
+```
+
+*The distributions between attributes and the label data are quite similar compared to the distributions on the "Complete" dataset, which means we can use the model to predict this specific observations, but we cannot extrapolate the info por the population at USS, due to sample and population issues.*
+
+# **Comparing Predicted and Original datasets Brand vs Salary distribution**
+```{r}
+par(mfrow = c(1,2))
+plot(dfPredicted$predicted~dfPredicted$salary, main = "Brand & Salary on PREDICTED")
+plot(df$brand~df$salary, main = "Brand & Salary on ORIGINAL")
+```
+
+*As we have just seen with all other distribution plots, we can confirm that the data at the Incomplete dataset follows the Original data distribution.*
